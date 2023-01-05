@@ -33,9 +33,16 @@ const validTypeOptions = ["json", "yaml"];
   }
   else if (command === "validate" && file) {
     // Validate an API
+    const promises = []
     for (const f of file) {
-      validate(f, options);
+      promises.push(validate(f, options));
     }
+    Promise.all(promises).then((values) => {
+      if (!values.every(val => val)) {
+        process.exit(1);
+      }
+    }
+    );
   }
   else if (command === "bundle" && file) {
     // Bundle a multi-file API
@@ -161,7 +168,9 @@ async function validate (file, options) {
   }
   catch (error) {
     errorHandler(error);
+    return false;
   }
+  return true;
 }
 
 
