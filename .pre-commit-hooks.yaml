@@ -2,7 +2,7 @@
   name: swagger-validation
   entry: swagger-cli
   description: Hook to validate swagger specs.
-  language: node
+  language: docker
   files: (openapi|swagger).*\.(json|ya?ml)$
   args: ["validate"]
 
