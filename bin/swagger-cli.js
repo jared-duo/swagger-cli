@@ -33,7 +33,9 @@ const validTypeOptions = ["json", "yaml"];
   }
   else if (command === "validate" && file) {
     // Validate an API
-    validate(file, options);
+    for (const f of file) {
+      validate(f, options);
+    }
   }
   else if (command === "bundle" && file) {
     // Bundle a multi-file API
@@ -98,6 +100,7 @@ function parseArgs () {
       type: "boolean",
     });
 
+
   // Show the version number on "--version" or "-v"
   yargs
     .version()
@@ -105,14 +108,23 @@ function parseArgs () {
 
   // Disable the default "--help" behavior
   yargs.help(false);
+  yargs.command(
+    "validate <files...>",
+    "Validates an API definition in Swagger 2.0 or OpenAPI 3.0 format",
+  );
+  yargs.command(
+    "bundle <file>",
+    "Bundles a multi-file API definition into a single file "
+  )
 
   // Parse the command-line arguments
   let args = yargs.argv;
 
   // Normalize the parsed arguments
+  let command = args._[0];
   let parsed = {
-    command: args._[0],
-    file: args._[1],
+    command: command,
+    file: (command == "validate") ? args.files : args.file,
     options: {
       schema: args.schema,
       spec: args.spec,
@@ -197,5 +209,4 @@ function getHelpText (commandName) {
 function errorHandler (err) {
   let errorMessage = process.env.DEBUG ? err.stack : err.message;
   console.error(chalk.red(errorMessage));
-  process.exit(1);
 }
