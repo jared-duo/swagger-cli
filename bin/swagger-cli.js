@@ -37,7 +37,7 @@ const validTypeOptions = ["json", "yaml"];
     for (const f of file) {
       promises.push(validate(f, options));
     }
-    Promise.all(promises).then((values) => {
+    Promise.all(promises).then(values => {
       if (!values.every(val => val)) {
         process.exit(1);
       }
@@ -167,7 +167,7 @@ async function validate (file, options) {
     console.log(file, "is valid");
   }
   catch (error) {
-    errorHandler(error);
+    errorHandler(error, file);
     return false;
   }
   return true;
@@ -215,7 +215,11 @@ function getHelpText (commandName) {
  *
  * @param {Error} err
  */
-function errorHandler (err) {
+function errorHandler (err, file="") {
   let errorMessage = process.env.DEBUG ? err.stack : err.message;
-  console.error(chalk.red(errorMessage));
+  if (file === "") {
+    console.error(chalk.red(errorMessage));
+  } else {
+    console.error(chalk.red(`File: ${file}; Error: ${errorMessage}`));
+  }
 }
